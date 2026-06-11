@@ -1,0 +1,181 @@
+{
+  "info": {
+    "_postman_id": "dd3decab-dc33-4e71-ae89-735fca58464e",
+    "name": "EduSense Backend Auth (Cookie JWT)",
+    "description": "Postman collection to test current EduSense Auth API endpoints. Cookies are HttpOnly; Postman can still persist them via its cookie jar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34092782"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "1. Register (creates user + sends OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"suimit User\",\n  \"email\": \"oneplusonu@gmail.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_host}}/api/auth/register/",
+              "host": [
+                "{{base_url_host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2. Verify OTP (logs in + sets cookie)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"oneplusonu@gmail.com\",\n  \"otp\": \"9191\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_host}}/api/auth/verify-otp/",
+              "host": [
+                "{{base_url_host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "verify-otp",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3. Login (sets access_token cookie)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"email\": \"oneplusonu@gmail.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url_host}}/api/auth/login/",
+              "host": [
+                "{{base_url_host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4. Me (requires auth cookie)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url_host}}/api/auth/me/",
+              "host": [
+                "{{base_url_host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5. Logout (clears cookie)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url_host}}/api/auth/logout/",
+              "host": [
+                "{{base_url_host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "base_url_host",
+      "value": "127.0.0.1:8000",
+      "type": "string"
+    }
+  ]
+}
