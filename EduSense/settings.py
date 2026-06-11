@@ -66,9 +66,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'edudb',
-        'USER': 'root', # your db username
-        'PASSWORD': '1234', # youd db password
-        'HOST': 'localhost',
+        'USER': 'remote', # your db username
+        'PASSWORD': 'remote@123', # youd db password
+        'HOST': '10.240.179.114',
         'PORT': '3306',
     }
 }
