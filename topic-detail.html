@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topic Detail - EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="learning-detail-page">
+    <nav>
+        <div class="logo">EduSense</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="dropdown">
+                <a href="courses.html" class="active">Learning</a>
+                <ul class="dropdown-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="quizzes.html">Quiz</a></li>
+                    <li><a href="index.html#chatbot">Chatbot</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="login.html" class="btn-signin">Login</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="learning-hero topic-hero">
+        <div class="learning-hero-inner">
+            <button class="learning-back-link button-reset" onclick="history.back()">Back to topics</button>
+            <div class="learning-kicker">Topic notes</div>
+            <h1 id="topicTitle">Loading topic...</h1>
+            <p>Review the concept carefully, then return to the topic list when you are ready to continue.</p>
+        </div>
+    </header>
+
+    <main class="topic-reading-shell">
+        <div id="loading" class="learning-status">Loading topic content...</div>
+        <article id="contentArea" class="markdown-content"></article>
+        <div class="topic-step-nav" role="navigation" aria-label="Topic navigation">
+            <a id="previousTopic" class="topic-step-button disabled" href="#" aria-disabled="true">
+                <span>Previous Topic</span>
+            </a>
+            <a id="nextTopic" class="topic-step-button disabled" href="#" aria-disabled="true">
+                <span>Next Topic</span>
+            </a>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="api.js"></script>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const dropdown = document.querySelector('.dropdown > a');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        dropdown.addEventListener('click', (event) => {
+            if (window.innerWidth <= 768) {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('mobile-active');
+            }
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const topic = params.get('topic');
+        const unit = params.get('unit');
+
+        function setTopicButton(elementId, targetTopic, label) {
+            const button = document.getElementById(elementId);
+
+            if (!targetTopic) {
+                button.classList.add('disabled');
+                button.removeAttribute('href');
+                button.setAttribute('aria-disabled', 'true');
+                button.querySelector('span').textContent = label;
+                return;
+            }
+
+            const unitSlug = targetTopic.unit_slug || unit;
+            button.classList.remove('disabled');
+            button.href = `topic-detail.html?topic=${targetTopic.slug}&unit=${unitSlug}`;
+            button.setAttribute('aria-disabled', 'false');
+            button.querySelector('span').textContent = targetTopic.title;
+        }
+
+        async function loadTopicNavigation(unitSlug) {
+            if (!unitSlug) {
+                return;
+            }
+
+            const topics = await fetchAPI(`/learning/units/${unitSlug}/topics/`);
+
+            if (!Array.isArray(topics)) {
+                return;
+            }
+
+            const currentIndex = topics.findIndex(item => item.slug === topic);
+
+            if (currentIndex === -1) {
+                return;
+            }
+
+            setTopicButton('previousTopic', topics[currentIndex - 1], 'Previous Topic');
+            setTopicButton('nextTopic', topics[currentIndex + 1], 'Next Topic');
+        }
+
+        async function loadTopic() {
+            const user = await api.requireAuth();
+            if (!user) return;
+
+            const data = await fetchAPI(`/learning/topic/${topic}/`);
+            const loading = document.getElementById('loading');
+            const contentArea = document.getElementById('contentArea');
+
+            loading.style.display = 'none';
+
+            if (!data || data.error) {
+                document.getElementById('topicTitle').textContent = 'Topic unavailable';
+                contentArea.innerHTML = `<div class="learning-empty">${data?.error || 'Failed to load topic'}</div>`;
+                return;
+            }
+
+            document.getElementById('topicTitle').textContent = data.title;
+            document.title = `${data.title} - EduSense`;
+            contentArea.innerHTML = marked.parse(data.markdown_content || '');
+            loadTopicNavigation(unit || data.unit_slug);
+        }
+
+        loadTopic();
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Quizzes | EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="quizzes-page">
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">EduSense</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="dropdown">
+                <a href="#" class="active">Learning</a>
+                <ul class="dropdown-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="quizzes.html">Quiz</a></li>
+                    <li><a href="chatbot.html">Chatbot</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="nav-buttons" id="nav-buttons">
+            <a href="login.html" class="btn-signin">Login</a>
+        </div>
+    </nav>
+
+    <!-- Quiz Header -->
+    <header class="courses-header-new" style="background: #f8fafc;">
+        <div class="header-container">
+            <div class="header-left">
+                <h1>Test Your Mastery Across Subjects</h1>
+                <p style="margin-top: 15px; color: var(--text-muted);">Select a subject to begin your evaluation. Quizzes are designed to cover the entire curriculum comprehensively.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Subjects Grid -->
+    <section class="courses-section-new">
+        <div class="courses-grid-new">
+            <!-- DBMS -->
+            <div class="course-card-new">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=1000&auto=format&fit=crop" alt="DBMS">
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--primary); background: #fdf4ff; padding: 4px 12px; border-radius: 100px;">NO Questions Yet</span>
+                        <span style="font-size: 12px; color: var(--text-muted);"><i class="far fa-clock"></i> 0 Mins</span>
+                    </div>
+                    <h3>Database Management Systems</h3>
+                    <p>Comprehensive quiz covering SQL, Normalization, and Transactions.</p>
+                    <a href="quiz-levels.html?subject=DBMS" class="btn-primary-new" style="display: block; text-align: center; padding: 12px; font-size: 14px;">Start Quiz →</a>
+                </div>
+            </div>
+
+            <!-- DSA -->
+            <div class="course-card-new">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=1000&auto=format&fit=crop" alt="DSA">
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--primary); background: #fdf4ff; padding: 4px 12px; border-radius: 100px;">NO Questions Yet</span>
+                        <span style="font-size: 12px; color: var(--text-muted);"><i class="far fa-clock"></i>0 Mins</span>
+                    </div>
+                    <h3>Data Structures & Algorithms</h3>
+                    <p>Test your logic on Arrays, Trees, Graphs, and DP.</p>
+                    <a href="quiz-levels.html?subject=DSA" class="btn-primary-new" style="display: block; text-align: center; padding: 12px; font-size: 14px;">Start Quiz →</a>
+                </div>
+            </div>
+
+            <!-- OS -->
+            <div class="course-card-new">
+                <div class="card-image">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1000&auto=format&fit=crop" alt="OS">
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--primary); background: #fdf4ff; padding: 4px 12px; border-radius: 100px;">NO Questions Yet</span>
+                        <span style="font-size: 12px; color: var(--text-muted);"><i class="far fa-clock"></i>0 Mins</span>
+                    </div>
+                    <h3>Operating Systems</h3>
+                    <p>Quiz on CPU Scheduling, Memory, and Deadlocks.</p>
+                    <a href="quiz-levels.html?subject=OS" class="btn-primary-new" style="display: block; text-align: center; padding: 12px; font-size: 14px;">Start Quiz →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <!-- ... existing footer ... -->
+        <div class="footer-bottom">
+            <p>&copy; 2026 EduSense. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('nav-buttons').innerHTML = `
+                <span style="font-weight: 600; color: var(--primary); margin-right: 15px;">Hi, ${user.fullName.split(' ')[0]}!</span>
+                <button onclick="logout()" class="btn-signin" style="background: var(--primary); color: white;">Logout</button>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="animations.js"></script>
+</body>
+</html>

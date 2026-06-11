@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Topics - EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="learning-detail-page">
+    <nav>
+        <div class="logo">EduSense</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="dropdown">
+                <a href="courses.html" class="active">Learning</a>
+                <ul class="dropdown-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="quizzes.html">Quiz</a></li>
+                    <li><a href="index.html#chatbot">Chatbot</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="login.html" class="btn-signin">Login</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="learning-hero compact">
+        <div class="learning-hero-inner">
+            <button class="learning-back-link button-reset" onclick="history.back()">Back to units</button>
+            <div class="learning-kicker">Unit topics</div>
+            <h1 id="unitTitle">Topics</h1>
+            <p>Pick a topic to study the notes, examples, and concepts attached to this unit.</p>
+        </div>
+    </header>
+
+    <main class="learning-main">
+        <section class="learning-panel">
+            <div class="learning-section-head">
+                <div>
+                    <span class="learning-label">Study list</span>
+                    <h2>Topics in this unit</h2>
+                </div>
+                <span class="learning-count" id="topicCount">0 topics</span>
+            </div>
+
+            <div id="loading" class="learning-status">Loading topics...</div>
+            <div id="topicsList" class="learning-list topic-list-modern"></div>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const dropdown = document.querySelector('.dropdown > a');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        dropdown.addEventListener('click', (event) => {
+            if (window.innerWidth <= 768) {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('mobile-active');
+            }
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const unit = params.get('unit');
+        const unitName = unit ? unit.replace(/-/g, ' ') : 'Unit';
+
+        document.getElementById('unitTitle').textContent =
+            unitName.replace(/\b\w/g, letter => letter.toUpperCase());
+
+        async function loadTopics() {
+            const user = await api.requireAuth();
+            if (!user) return;
+
+            const topics = await fetchAPI(`/learning/units/${unit}/topics/`);
+            const loading = document.getElementById('loading');
+            const list = document.getElementById('topicsList');
+            const count = document.getElementById('topicCount');
+
+            loading.style.display = 'none';
+
+            if (!Array.isArray(topics)) {
+                list.innerHTML = `<div class="learning-empty">${topics.error || 'Failed to load topics'}</div>`;
+                return;
+            }
+
+            count.textContent = `${topics.length} ${topics.length === 1 ? 'topic' : 'topics'}`;
+
+            if (!topics.length) {
+                list.innerHTML = '<div class="learning-empty">No topics found for this unit.</div>';
+                return;
+            }
+
+            list.innerHTML = topics.map((topic, index) => `
+                <article class="learning-row topic-row">
+                    <div class="learning-index">${String(index + 1).padStart(2, '0')}</div>
+                    <div class="learning-row-body">
+                        <p>Topic ${topic.order || index + 1}</p>
+                        <h3>${topic.title}</h3>
+                    </div>
+                    <a href="topic-detail.html?topic=${topic.slug}&unit=${unit}" class="learning-action">Read Notes</a>
+                </article>
+            `).join('');
+        }
+
+        loadTopics();
+    </script>
+</body>
+</html>

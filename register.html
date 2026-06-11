@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="auth.css">
+    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-sidebar">
+            <div class="auth-brand">
+                <div class="brand-logo">EduSense</div>
+                <div class="brand-tagline">Study Online, Learn Online</div>
+            </div>
+            <div class="sidebar-content">
+                <h1>Learn From World's Best Instructors Around The World.</h1>
+            </div>
+            <img src="assets/images/login_register.jpg" alt="Education Illustration" class="sidebar-image">
+        </div>
+        <div class="auth-form-container">
+            <!-- Alert Container for API messages -->
+            <div id="alert-container" style="margin-bottom: 15px;"></div>
+
+            <!-- Step 1: Registration Form -->
+            <div id="step-register">
+                <div class="form-header">
+                    <h2>Create Account</h2>
+                    <p>Start your learning journey with us today.</p>
+                </div>
+                <form id="registerForm">
+                    <div class="input-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" placeholder="Enter your first name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" placeholder="Enter your last name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Create a password" required>
+                        <span class="toggle-password">Show</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                        <span class="toggle-password confirm-toggle">Show</span>
+                    </div>
+                    <p style="font-size: 12px; color: #64748b; margin: -8px 0 16px;">
+                        Password must be 8+ characters with uppercase, lowercase, a special symbol, and no spaces.
+                    </p>
+                    <!-- <div class="form-options">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" required>
+                            <label for="terms">I agree to the <a href="#" class="forgot-password">terms of service</a> and <a href="#" class="forgot-password">privacy policy</a></label>
+                        </div>
+                    </div> -->
+                    <button type="submit" id="btn-register" class="btn-auth">Sign Up</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already Have an account? <a href="login.html">Sign in</a>
+                </div>
+            </div>
+
+            <!-- Step 2: OTP Verification Form (Hidden by default) -->
+            <div id="step-otp" style="display: none;">
+                <div class="form-header">
+                    <h2>Verify Your Email</h2>
+                    <p>We sent a one-time password (OTP) to your email.</p>
+                </div>
+                <form id="otpForm">
+                    <div class="input-group">
+                        <label for="otp">Enter OTP</label>
+                        <input type="text" id="otp" placeholder="e.g. 1522" required>
+                    </div>
+                    <button type="submit" id="btn-verify" class="btn-auth">Verify OTP</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+     <script src="api.js"></script>
+    <!-- Inject API Script -->
+    <script>
+    let registeredEmail = "";
+    const alertBox = document.getElementById('alert-container');
+
+    // Backend API Base URL
+    //const BASE_URL = "http://127.0.0.1:8000";
+
+    // Show alert messages
+    function showMessage(container, message, isError = false) {
+        container.innerHTML = `
+            <div style="
+                padding:10px;
+                border-radius:8px;
+                margin-bottom:10px;
+                color:white;
+                background:${isError ? '#e74c3c' : '#2ecc71'};
+            ">
+                ${message}
+            </div>
+        `;
+    }
+
+    function validatePassword(password, confirmPassword) {
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters long.';
+        }
+
+        if (/\s/.test(password)) {
+            return 'Password must not contain spaces.';
+        }
+
+        if (!/[A-Z]/.test(password)) {
+            return 'Password must contain at least one uppercase letter.';
+        }
+
+        if (!/[a-z]/.test(password)) {
+            return 'Password must contain at least one lowercase letter.';
+        }
+
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            return 'Password must contain at least one special symbol.';
+        }
+
+        if (password !== confirmPassword) {
+            return 'Password and confirm password must be same.';
+        }
+
+        return '';
+    }
+
+    // REGISTER USER
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btn-register');
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        const passwordError = validatePassword(password, confirmPassword);
+
+        if (!firstName || !lastName) {
+            showMessage(alertBox, 'First name and last name are required.', true);
+            return;
+        }
+
+        if (passwordError) {
+            showMessage(alertBox, passwordError, true);
+            return;
+        }
+
+        btn.textContent = 'Creating Account...';
+        btn.disabled = true;
+
+        try {
+
+            const data = await api.register(firstName, lastName, email, password, confirmPassword);
+
+            if (data.success) {
+
+                registeredEmail = email;
+
+                showMessage(
+                    alertBox,
+                    data.message || 'Account created! Check your email for OTP.',
+                    false
+                );
+
+                document.getElementById('step-register').style.display = 'none';
+                document.getElementById('step-otp').style.display = 'block';
+
+            } else {
+
+                let errorMsg = 'Registration failed';
+                if (typeof data.error === 'string') {
+                    errorMsg = data.error;
+                } else if (data.error && typeof data.error === 'object') {
+                    // Handle serializer errors (dict of field errors)
+                    errorMsg = Object.values(data.error).flat().join(', ');
+                }
+
+                showMessage(
+                    alertBox,
+                    errorMsg,
+                    true
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                alertBox,
+                'Server error. Make sure Django server is running.',
+                true
+            );
+        }
+
+        btn.textContent = 'Sign Up';
+        btn.disabled = false;
+    });
+
+    // VERIFY OTP
+    document.getElementById('otpForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btn-verify');
+        const otp = document.getElementById('otp').value.trim();
+
+        btn.textContent = 'Verifying...';
+        btn.disabled = true;
+
+        try {
+            const data = await api.verifyOTP(registeredEmail, otp);
+
+            if (data.success) {
+                showMessage(
+                    alertBox,
+                    data.message || 'Email verified successfully. Please login.',
+                    false
+                );
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } else {
+                showMessage(
+                    alertBox,
+                    data.error || 'Invalid OTP. Please try again.',
+                    true
+                );
+            }
+        } catch (error) {
+            console.error(error);
+
+            showMessage(
+                alertBox,
+                'Server error. Make sure Django server is running.',
+                true
+            );
+        }
+
+        btn.textContent = 'Verify OTP';
+        btn.disabled = false;
+    });
+
+    // Toggle Password
+    document.querySelectorAll('.toggle-password').forEach(function(togglePassword) {
+        const passwordInput = togglePassword.classList.contains('confirm-toggle')
+            ? document.querySelector('#confirmPassword')
+            : document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function() {
+
+            const type =
+                passwordInput.getAttribute('type') === 'password'
+                ? 'text'
+                : 'password';
+
+            passwordInput.setAttribute('type', type);
+
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+    });
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="animations.js"></script>
+   
+</body>
+</html>

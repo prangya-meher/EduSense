@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard | EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-container" style="display: none" id="auth-content">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="logo-section">
+          <!-- <div class="logo-icon"><i class="fas fa-brain"></i></div> -->
+          <span>EduSense</span>
+        </div>
+        <nav class="nav-menu">
+          <div class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="fas fa-th-large"></i>
+              <span>Dashboard</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="courses.html" class="nav-link">
+              <i class="fas fa-book-open"></i>
+              <span>Learn</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="quizzes.html" class="nav-link">
+              <i class="fas fa-edit"></i>
+              <span>Quiz</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-chart-line"></i>
+              <span>Performance</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="chatbot.html" class="nav-link">
+              <i class="fas fa-comment-dots"></i>
+              <span>Chatbot</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </a>
+          </div>
+
+          <div class="nav-item" id="admin-menu" style="display: none">
+            <a href="http://127.0.0.1:8000/admin/" class="nav-link">
+              <i class="fas fa-user-shield"></i>
+              <span>Admin</span>
+            </a>
+          </div>
+        </nav>
+        <div class="logout-section" id="logout-btn">
+          <a onclick="handleLogout()" class="nav-link">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header>
+          <div class="header-left">
+            <div class="hamburger" id="dashboard-hamburger">
+              <i class="fas fa-bars"></i>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="icon-btn">
+              <i class="far fa-bell"></i>
+              <div class="notification-dot"></div>
+            </div>
+            <div class="user-profile">
+              <div class="user-avatar" id="profile-initials"></div>
+              <span class="user-name" id="user-name-header"></span>
+            </div>
+          </div>
+        </header>
+
+        <section class="welcome-row">
+          <div class="welcome-text">
+            <h1 id="welcome-title">Welcome back! 👋</h1>
+            <p>Keep learning, keep growing.</p>
+          </div>
+          <div class="level-card">
+            <div class="level-icon"><i class="fas fa-medal"></i></div>
+            <div class="level-info">
+              <span>Your Level</span>
+              <!-- <strong>Intermediate</strong> -->
+            </div>
+          </div>
+        </section>
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon purple"><i class="fas fa-book"></i></div>
+              <span class="stat-title">Quizzes Taken</span>
+            </div>
+            <!-- <div class="stat-value">24</div> -->
+            <div class="stat-footer">Keep it up!</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon green">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <span class="stat-title">Average Score</span>
+            </div>
+            <!-- <div class="stat-value">72%</div> -->
+            <div class="stat-footer">Good job!</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <span class="stat-title">Strengths</span>
+            </div>
+            <!-- <div class="stat-value">5</div> -->
+            <div class="stat-footer">Topics</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <span class="stat-title">Areas Of Improvement</span>
+            </div>
+            <!-- <div class="stat-value">3</div> -->
+            <div class="stat-footer">Focus more</div>
+          </div>
+        </section>
+
+        <section class="bottom-grid">
+          <!-- Weak Areas -->
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fas fa-star"></i>
+                <span>Area Of Improvement</span>
+              </div>
+              <a href="#" class="view-all">View all</a>
+            </div>
+            <!-- <div class="topic-list">
+                        <div class="topic-item">
+                            <div class="topic-icon"><i class="fas fa-database"></i></div>
+                            <div class="topic-info">
+                                <h4>SQL Joins</h4>
+                                <div class="progress-wrapper">
+                                    <div class="progress-bar"><div class="progress-fill" style="width: 40%;"></div></div>
+                                    <span class="progress-val">40%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-icon"><i class="fas fa-layer-group"></i></div>
+                            <div class="topic-info">
+                                <h4>Normalization</h4>
+                                <div class="progress-wrapper">
+                                    <div class="progress-bar"><div class="progress-fill" style="width: 45%;"></div></div>
+                                    <span class="progress-val">45%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-icon"><i class="fas fa-exchange-alt"></i></div>
+                            <div class="topic-info">
+                                <h4>Transaction</h4>
+                                <div class="progress-wrapper">
+                                    <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+                                    <span class="progress-val">50%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+          </div>
+
+          <!-- Recommended -->
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fas fa-book"></i>
+                <span>Recommended for You</span>
+              </div>
+              <a href="#" class="view-all">View all</a>
+            </div>
+            <!-- <div class="rec-list">
+                        <div class="rec-item">
+                            <div class="rec-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="rec-info">
+                                <h4>Database Normalization Basics</h4>
+                                <span>Topic</span>
+                            </div>
+                            <button class="start-btn">Start</button>
+                        </div>
+                        <div class="rec-item quiz">
+                            <div class="rec-icon"><i class="fas fa-tasks"></i></div>
+                            <div class="rec-info">
+                                <h4>SQL Practice Quiz - Basic</h4>
+                                <span>Quiz</span>
+                            </div>
+                            <button class="start-btn">Start</button>
+                        </div>
+                        <div class="rec-item note">
+                            <div class="rec-icon"><i class="fas fa-sticky-note"></i></div>
+                            <div class="rec-info">
+                                <h4>DBMS Revision Notes</h4>
+                                <span>Notes</span>
+                            </div>
+                            <button class="start-btn">Start</button>
+                        </div>
+                    </div> -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+   <script type="module" src="dashboard.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script src="animations.js"></script>
+
+</body>
+</html>
+  

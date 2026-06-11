@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Difficulty | EduSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .levels-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .level-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .level-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(112, 26, 117, 0.1);
+            border-color: var(--primary-light);
+        }
+        .level-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .level-card h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        .level-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .basic .level-badge { background: #f0fdf4; color: #22c55e; }
+        .moderate .level-badge { background: #eff6ff; color: #3b82f6; }
+        .difficult .level-badge { background: #fef2f2; color: #ef4444; }
+
+        .btn-start-level {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background 0.3s ease;
+        }
+        .level-card:hover .btn-start-level {
+            background: var(--primary-light);
+        }
+
+        @media (max-width: 992px) {
+            .levels-container { grid-template-columns: 1fr; max-width: 500px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">EduSense</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="quizzes.html" class="active">Back to Subjects</a></li>
+        </ul>
+    </nav>
+
+    <header class="topic-header" style="text-align: center; padding: 60px 20px; background: var(--primary); color: white;">
+        <div class="container">
+            <span style="text-transform: uppercase; letter-spacing: 2px; font-size: 14px; font-weight: 700; opacity: 0.8;">Choose Your Challenge</span>
+            <h1 id="subject-title" style="font-size: 42px; font-weight: 800; margin-top: 10px;">Subject Name</h1>
+        </div>
+    </header>
+
+    <div class="levels-container">
+        <!-- Basic -->
+        <div class="level-card basic">
+            <span class="level-badge">Level 1</span>
+            <div class="level-icon">🌱</div>
+            <h2>Basic</h2>
+            <p>Perfect for beginners. Focuses on fundamental concepts and direct definitions.</p>
+            <a href="#" class="btn-start-level">Choose Basic</a>
+        </div>
+
+        <!-- Moderate -->
+        <div class="level-card moderate">
+            <span class="level-badge">Level 2</span>
+            <div class="level-icon">🚀</div>
+            <h2>Moderate</h2>
+            <p>Intermediate level. Involves conceptual application and multi-step reasoning.</p>
+            <a href="#" class="btn-start-level">Choose Moderate</a>
+        </div>
+
+        <!-- Difficult -->
+        <div class="level-card difficult">
+            <span class="level-badge">Level 3</span>
+            <div class="level-icon">🧠</div>
+            <h2>Difficult</h2>
+            <p>Expert level. Focuses on complex scenarios, troubleshooting, and edge cases.</p>
+            <a href="#" class="btn-start-level">Choose Difficult</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const subject = urlParams.get('subject');
+        document.getElementById('subject-title').textContent = subject || 'Subject Quiz';
+
+        // Update links to point to the actual quiz (placeholder for now)
+        document.querySelectorAll('.btn-start-level').forEach(btn => {
+            btn.href = `quiz-start.html?subject=${encodeURIComponent(subject)}&level=${btn.textContent.split(' ')[1]}`;
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="animations.js"></script>
+</body>
+</html>
