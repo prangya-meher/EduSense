@@ -58,91 +58,114 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="api.js"></script>
-    <script>
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.querySelector('.nav-links');
-        const dropdown = document.querySelector('.dropdown > a');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
+  <script type="module">
+import { api, fetchAPI } from './api.js';
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.querySelector('.nav-links');
+const dropdown = document.querySelector('.dropdown > a');
+const dropdownMenu = document.querySelector('.dropdown-menu');
 
-        dropdown.addEventListener('click', (event) => {
-            if (window.innerWidth <= 768) {
-                event.preventDefault();
-                dropdownMenu.classList.toggle('mobile-active');
-            }
-        });
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
 
-        const params = new URLSearchParams(window.location.search);
-        const topic = params.get('topic');
-        const unit = params.get('unit');
+dropdown.addEventListener('click', (event) => {
+    if (window.innerWidth <= 768) {
+        event.preventDefault();
+        dropdownMenu.classList.toggle('mobile-active');
+    }
+});
 
-        function setTopicButton(elementId, targetTopic, label) {
-            const button = document.getElementById(elementId);
+const params = new URLSearchParams(window.location.search);
+const topic = params.get('topic');
+const unit = params.get('unit');
 
-            if (!targetTopic) {
-                button.classList.add('disabled');
-                button.removeAttribute('href');
-                button.setAttribute('aria-disabled', 'true');
-                button.querySelector('span').textContent = label;
-                return;
-            }
+function setTopicButton(elementId, targetTopic, label) {
+    const button = document.getElementById(elementId);
 
-            const unitSlug = targetTopic.unit_slug || unit;
-            button.classList.remove('disabled');
-            button.href = `topic-detail.html?topic=${targetTopic.slug}&unit=${unitSlug}`;
-            button.setAttribute('aria-disabled', 'false');
-            button.querySelector('span').textContent = targetTopic.title;
-        }
+    if (!targetTopic) {
+        button.classList.add('disabled');
+        button.removeAttribute('href');
+        button.setAttribute('aria-disabled', 'true');
+        button.querySelector('span').textContent = label;
+        return;
+    }
 
-        async function loadTopicNavigation(unitSlug) {
-            if (!unitSlug) {
-                return;
-            }
+    const unitSlug = targetTopic.unit_slug || unit;
 
-            const topics = await fetchAPI(`/learning/units/${unitSlug}/topics/`);
+    button.classList.remove('disabled');
+    button.href = `topic-detail.html?topic=${targetTopic.slug}&unit=${unitSlug}`;
+    button.setAttribute('aria-disabled', 'false');
+    button.querySelector('span').textContent = targetTopic.title;
+}
 
-            if (!Array.isArray(topics)) {
-                return;
-            }
+async function loadTopicNavigation(unitSlug) {
+    if (!unitSlug) return;
 
-            const currentIndex = topics.findIndex(item => item.slug === topic);
+    // Use the same endpoint you used in unit-topics.html
+    const response = await fetchAPI(`/learning/${unitSlug}/topics/`);
 
-            if (currentIndex === -1) {
-                return;
-            }
+    if (!response.success) {
+        console.log(response.error);
+        return;
+    }
 
-            setTopicButton('previousTopic', topics[currentIndex - 1], 'Previous Topic');
-            setTopicButton('nextTopic', topics[currentIndex + 1], 'Next Topic');
-        }
+    const topics = response.data;
 
-        async function loadTopic() {
-            const user = await api.requireAuth();
-            if (!user) return;
+    if (!Array.isArray(topics)) {
+        return;
+    }
 
-            const data = await fetchAPI(`/learning/topic/${topic}/`);
-            const loading = document.getElementById('loading');
-            const contentArea = document.getElementById('contentArea');
+    const currentIndex = topics.findIndex(item => item.slug === topic);
 
-            loading.style.display = 'none';
+    if (currentIndex === -1) {
+        return;
+    }
 
-            if (!data || data.error) {
-                document.getElementById('topicTitle').textContent = 'Topic unavailable';
-                contentArea.innerHTML = `<div class="learning-empty">${data?.error || 'Failed to load topic'}</div>`;
-                return;
-            }
+    setTopicButton('previousTopic', topics[currentIndex - 1], 'Previous Topic');
+    setTopicButton('nextTopic', topics[currentIndex + 1], 'Next Topic');
+}
 
-            document.getElementById('topicTitle').textContent = data.title;
-            document.title = `${data.title} - EduSense`;
-            contentArea.innerHTML = marked.parse(data.markdown_content || '');
-            loadTopicNavigation(unit || data.unit_slug);
-        }
+async function loadTopic() {
+    const user = await api.requireAuth();
 
-        loadTopic();
-    </script>
+    if (!user) return;
+
+    if (!topic) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('topicTitle').textContent = 'Topic unavailable';
+        document.getElementById('contentArea').innerHTML =
+            '<div class="learning-empty">No topic selected.</div>';
+        return;
+    }
+
+    const response = await fetchAPI(`/learning/topic/${topic}/`);
+
+    const loading = document.getElementById('loading');
+    const contentArea = document.getElementById('contentArea');
+
+    loading.style.display = 'none';
+
+    if (!response.success) {
+        document.getElementById('topicTitle').textContent = 'Topic unavailable';
+        contentArea.innerHTML =
+            `<div class="learning-empty">${response.error || 'Failed to load topic'}</div>`;
+        return;
+    }
+
+    const topicData = response.data;
+
+    document.getElementById('topicTitle').textContent = topicData.title;
+    document.title = `${topicData.title} - EduSense`;
+
+    contentArea.innerHTML = marked.parse(topicData.markdown_content || '');
+
+    loadTopicNavigation(unit || topicData.unit_slug);
+}
+
+loadTopic();
+</script>
 </body>
 </html>

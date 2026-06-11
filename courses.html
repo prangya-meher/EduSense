@@ -109,7 +109,7 @@ async function loadSubjects() {
     if (!user) return;
 
     const response = await fetchAPI('/learning/subjects/');
-    console.log(response);
+
 
     const grid = document.getElementById('subjectsGrid');
 

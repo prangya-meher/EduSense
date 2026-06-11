@@ -59,68 +59,91 @@
         </section>
     </main>
 
-    <script src="api.js"></script>
-    <script>
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.querySelector('.nav-links');
-        const dropdown = document.querySelector('.dropdown > a');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
+    <script type="module">
+import { api, fetchAPI } from './api.js';
 
-        dropdown.addEventListener('click', (event) => {
-            if (window.innerWidth <= 768) {
-                event.preventDefault();
-                dropdownMenu.classList.toggle('mobile-active');
-            }
-        });
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.querySelector('.nav-links');
+const dropdown = document.querySelector('.dropdown > a');
+const dropdownMenu = document.querySelector('.dropdown-menu');
 
-        const params = new URLSearchParams(window.location.search);
-        const unit = params.get('unit');
-        const unitName = unit ? unit.replace(/-/g, ' ') : 'Unit';
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
 
-        document.getElementById('unitTitle').textContent =
-            unitName.replace(/\b\w/g, letter => letter.toUpperCase());
+dropdown.addEventListener('click', (event) => {
+    if (window.innerWidth <= 768) {
+        event.preventDefault();
+        dropdownMenu.classList.toggle('mobile-active');
+    }
+});
 
-        async function loadTopics() {
-            const user = await api.requireAuth();
-            if (!user) return;
+const params = new URLSearchParams(window.location.search);
+const unit = params.get('unit');
 
-            const topics = await fetchAPI(`/learning/units/${unit}/topics/`);
-            const loading = document.getElementById('loading');
-            const list = document.getElementById('topicsList');
-            const count = document.getElementById('topicCount');
+if (!unit) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('topicsList').innerHTML =
+        '<div class="learning-empty">No unit selected.</div>';
+} else {
+    const unitName = unit.replace(/-/g, ' ');
 
-            loading.style.display = 'none';
+    document.getElementById('unitTitle').textContent =
+        unitName.replace(/\b\w/g, letter => letter.toUpperCase());
 
-            if (!Array.isArray(topics)) {
-                list.innerHTML = `<div class="learning-empty">${topics.error || 'Failed to load topics'}</div>`;
-                return;
-            }
+    loadTopics();
+}
 
-            count.textContent = `${topics.length} ${topics.length === 1 ? 'topic' : 'topics'}`;
+async function loadTopics() {
+    const user = await api.requireAuth();
 
-            if (!topics.length) {
-                list.innerHTML = '<div class="learning-empty">No topics found for this unit.</div>';
-                return;
-            }
+    if (!user) return;
 
-            list.innerHTML = topics.map((topic, index) => `
-                <article class="learning-row topic-row">
-                    <div class="learning-index">${String(index + 1).padStart(2, '0')}</div>
-                    <div class="learning-row-body">
-                        <p>Topic ${topic.order || index + 1}</p>
-                        <h3>${topic.title}</h3>
-                    </div>
-                    <a href="topic-detail.html?topic=${topic.slug}&unit=${unit}" class="learning-action">Read Notes</a>
-                </article>
-            `).join('');
-        }
+    const response = await fetchAPI(`/learning/units/${unit}/topics/`);
+    
 
-        loadTopics();
-    </script>
-</body>
+    console.log('Fetched topics response:', response);
+
+    const loading = document.getElementById('loading');
+    const list = document.getElementById('topicsList');
+    const count = document.getElementById('topicCount');
+
+    loading.style.display = 'none';
+
+    if (!response.success) {
+        list.innerHTML = `<div class="learning-empty">${response.error || 'Failed to load topics'}</div>`;
+        return;
+    }
+
+    const topics = response.data;
+
+    if (!Array.isArray(topics)) {
+        list.innerHTML = '<div class="learning-empty">Invalid response format.</div>';
+        return;
+    }
+
+    count.textContent = `${topics.length} ${topics.length === 1 ? 'topic' : 'topics'}`;
+
+    if (topics.length === 0) {
+        list.innerHTML = '<div class="learning-empty">No topics found for this unit.</div>';
+        return;
+    }
+
+    list.innerHTML = topics.map((topic, index) => `
+        <article class="learning-row topic-row">
+            <div class="learning-index">${String(index + 1).padStart(2, '0')}</div>
+            <div class="learning-row-body">
+                <p>Topic ${topic.order || index + 1}</p>
+                <h3>${topic.title}</h3>
+            </div>
+            <a href="topic-detail.html?topic=${topic.slug}&unit=${unit}" class="learning-action">
+                Read Notes
+            </a>
+        </article>
+    `).join('');
+}
+</script>
+    </body>
 </html>

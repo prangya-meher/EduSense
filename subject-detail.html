@@ -59,8 +59,10 @@
         </section>
     </main>
 
-    <script src="api.js"></script>
-    <script>
+    <script type="module">
+import { api, fetchAPI } from './api.js';
+
+
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.querySelector('.nav-links');
         const dropdown = document.querySelector('.dropdown > a');
@@ -88,8 +90,15 @@
         async function loadUnits() {
             const user = await api.requireAuth();
             if (!user) return;
+            
+            const response = await fetchAPI(`/learning/subjects/${subject}/units/`);
 
-            const units = await fetchAPI(`/learning/subjects/${subject}/units/`);
+            if (!response.success) {
+                // show error
+                return;
+            }
+
+            const units = response.data;    
             const loading = document.getElementById('loading');
             const grid = document.getElementById('unitsGrid');
             const count = document.getElementById('unitCount');
